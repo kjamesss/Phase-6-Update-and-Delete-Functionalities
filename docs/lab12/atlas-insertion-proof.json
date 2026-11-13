@@ -1,0 +1,31 @@
+{
+  "database": "bu_task_planner",
+  "verification": "Read directly from MongoDB Atlas after browser POST submissions. Password hash omitted from this evidence export.",
+  "user": {
+    "_id": "6af7261a0bdfb04b96f92596",
+    "name": "Phase Four Student",
+    "email": "browser.1794582041369@example.test",
+    "role": "user",
+    "createdAt": "2026-11-13T15:00:42.296Z",
+    "updatedAt": "2026-11-13T15:00:42.296Z"
+  },
+  "category": {
+    "_id": "6af7261b0bdfb04b96f92598",
+    "name": "IT 112 - Web Systems and Technologies",
+    "color": "#7c3aed",
+    "owner": "6af7261a0bdfb04b96f92596",
+    "createdAt": "2026-11-13T15:00:43.740Z"
+  },
+  "task": {
+    "_id": "6af7261c0bdfb04b96f92599",
+    "title": "Submit Phase 4 performance report",
+    "description": "Document form submission, API validation, and MongoDB insertion.",
+    "status": "In Progress",
+    "priority": "High",
+    "dueDate": "2026-11-30T00:00:00.000Z",
+    "owner": "6af7261a0bdfb04b96f92596",
+    "category": "6af7261b0bdfb04b96f92598",
+    "createdAt": "2026-11-13T15:00:44.268Z",
+    "updatedAt": "2026-11-13T15:00:44.268Z"
+  }
+}

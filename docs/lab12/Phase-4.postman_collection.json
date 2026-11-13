@@ -1,0 +1,173 @@
+{
+  "info": {
+    "name": "BU Phase 4 insertion checks",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "email",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Register student",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('email', 'postman.' + Date.now() + '@example.test');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.json().message).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Student\",\n  \"email\": \"{{email}}\",\n  \"password\": \"ClassroomPassword123!\"\n}"
+        },
+        "url": "{{baseUrl}}/api/users"
+      }
+    },
+    {
+      "name": "Reject duplicate email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('JSON response', () => pm.expect(pm.response.json().message).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Student\",\n  \"email\": \"{{email}}\",\n  \"password\": \"ClassroomPassword123!\"\n}"
+        },
+        "url": "{{baseUrl}}/api/users"
+      }
+    },
+    {
+      "name": "Create subject",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.json().message).to.be.a('string'));",
+              "pm.collectionVariables.set('category', pm.response.json().category._id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"IT 112\",\n  \"color\": \"#b32c68\"\n}"
+        },
+        "url": "{{baseUrl}}/api/categories"
+      }
+    },
+    {
+      "name": "Create academic task",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.json().message).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman integration task\",\n  \"description\": \"Verified through the collection runner\",\n  \"dueDate\": \"2026-11-30\",\n  \"status\": \"To Do\",\n  \"priority\": \"High\",\n  \"category\": \"{{category}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/tasks"
+      }
+    },
+    {
+      "name": "Reject invalid task",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('JSON response', () => pm.expect(pm.response.json().message).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \" \",\n  \"dueDate\": \"2026-02-30\",\n  \"priority\": \"Urgent\"\n}"
+        },
+        "url": "{{baseUrl}}/api/tasks"
+      }
+    }
+  ]
+}

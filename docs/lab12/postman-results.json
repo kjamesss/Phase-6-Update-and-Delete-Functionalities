@@ -1,0 +1,91 @@
+{
+  "runner": "Postman collection runner (Newman)",
+  "database": "MongoDB Atlas, bu_task_planner",
+  "requests": [
+    {
+      "name": "Register student",
+      "method": "POST",
+      "route": "api/users",
+      "status": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Reject duplicate email",
+      "method": "POST",
+      "route": "api/users",
+      "status": 409,
+      "assertions": [
+        {
+          "name": "HTTP 409",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Create subject",
+      "method": "POST",
+      "route": "api/categories",
+      "status": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Create academic task",
+      "method": "POST",
+      "route": "api/tasks",
+      "status": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Reject invalid task",
+      "method": "POST",
+      "route": "api/tasks",
+      "status": 400,
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "requests": 5,
+    "assertions": 10,
+    "failed": 0
+  }
+}
