@@ -161,3 +161,72 @@ test('GET routes enforce ownership and administrator access', async () => {
     const overview = await (await get('/api/admin/tasks', adminCookie)).json();
     assert.ok(overview.tasks.every(task => task.owner.name === 'Phase Four Student'));
 });
+test('Task PUT and DELETE validate data, enforce ownership, and change the stored document', async () => {
+    const write = (method, route, body) => fetch(base + route, {
+        method, headers: { Cookie: cookie, 'Content-Type': 'application/json' },
+        body: body && JSON.stringify(body)
+    });
+    const original = await Task.findOne({ title: 'Uncategorized task' });
+    const route = '/api/tasks/' + original.id;
+    const changes = { title: ' Updated coursework ', description: 'Revised instructions', dueDate: '2026-12-01',
+        priority: 'High', status: 'Completed', category: null, owner: new mongoose.Types.ObjectId() };
+    assert.equal((await write('PUT', route, { ...changes, dueDate: '2026-02-30' })).status, 400);
+    const updated = await write('PUT', route, changes);
+    assert.equal(updated.status, 200);
+    assert.equal((await updated.json()).task.title, 'Updated coursework');
+    const stored = await Task.findById(original.id);
+    assert.equal(stored.status, 'Completed');
+    assert.equal(String(stored.owner), String(original.owner));
+
+    const other = await User.findOne({ email: 'other@example.test' });
+    const privateTask = await Task.create({ owner: other.id, title: 'Private coursework', dueDate: new Date() });
+    assert.equal((await write('PUT', '/api/tasks/' + privateTask.id, changes)).status, 404);
+    assert.equal((await write('DELETE', '/api/tasks/' + privateTask.id)).status, 404);
+    assert.equal((await write('DELETE', '/api/tasks/invalid')).status, 400);
+    assert.equal((await write('DELETE', route)).status, 200);
+    assert.equal(await Task.exists({ _id: original.id }), null);
+    assert.equal((await write('DELETE', route)).status, 404);
+});
+
+test('Subject editing and deletion preserve coursework and protect other owners', async () => {
+    const category = await Category.findOne({ name: 'IT 112' });
+    const route = '/api/categories/' + category.id;
+    const change = (method, url, body) => fetch(base + url, {
+        method, headers: { Cookie: cookie, 'Content-Type': 'application/json' },
+        body: body && JSON.stringify(body)
+    });
+    assert.equal((await change('PUT', route, { name: 'IT 112 revised', color: '' })).status, 200);
+    const stored = await Category.findById(category.id);
+    assert.equal(stored.name, 'IT 112 revised');
+    assert.equal(stored.color, undefined);
+    const other = await Category.findOne({ name: 'Private subject' });
+    assert.equal((await change('DELETE', '/api/categories/' + other.id)).status, 404);
+    assert.equal((await change('DELETE', route)).status, 200);
+    assert.equal(await Category.exists({ _id: category.id }), null);
+    const task = await Task.findOne({ title: 'Submit Phase 4 report' });
+    assert.equal(task.category, null);
+});
+
+test('Account changes preserve roles and refuse deletion of an administrator or an account with coursework', async () => {
+    const student = await User.findOne({ email: 'phase4@example.test' });
+    const empty = await User.findOne({ email: 'empty@example.test' });
+    const admin = await User.findOne({ email: 'admin@example.test' });
+    const login = await request('/api/login', { email: admin.email, password: 'LabPassword123!' });
+    const adminCookie = login.headers.get('set-cookie').split(';')[0];
+    const change = (method, id, auth, body) => fetch(base + '/api/users/' + id, {
+        method, headers: { Cookie: auth, 'Content-Type': 'application/json' },
+        body: body && JSON.stringify(body)
+    });
+    assert.equal((await change('PUT', empty.id, cookie, { name: 'Unauthorized', email: empty.email })).status, 404);
+    const profile = await change('PUT', student.id, cookie, { name: 'Updated student', email: student.email, role: 'admin' });
+    assert.equal(profile.status, 200);
+    assert.equal((await profile.json()).user.role, 'user');
+    assert.equal((await change('DELETE', empty.id, cookie)).status, 403);
+    assert.equal((await change('DELETE', admin.id, adminCookie)).status, 404);
+    assert.equal((await change('DELETE', student.id, adminCookie)).status, 409);
+    const edited = await change('PUT', empty.id, adminCookie, { name: 'Reviewed student', email: 'REVIEWED@EXAMPLE.TEST' });
+    assert.equal(edited.status, 200);
+    assert.equal((await edited.json()).user.email, 'reviewed@example.test');
+    assert.equal((await change('DELETE', empty.id, adminCookie)).status, 200);
+    assert.equal(await User.exists({ _id: empty.id }), null);
+});
