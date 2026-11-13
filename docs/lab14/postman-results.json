@@ -1,0 +1,232 @@
+{
+  "runner": "Newman against MongoDB Atlas",
+  "requests": [
+    {
+      "name": "Register disposable student",
+      "method": "POST",
+      "status": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Create subject",
+      "method": "POST",
+      "status": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Create task",
+      "method": "POST",
+      "status": 201,
+      "assertions": [
+        {
+          "name": "HTTP 201",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Reject invalid deadline",
+      "method": "PUT",
+      "status": 400,
+      "assertions": [
+        {
+          "name": "HTTP 400",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Edit task",
+      "method": "PUT",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Edit subject",
+      "method": "PUT",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Delete subject",
+      "method": "DELETE",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Read preserved task",
+      "method": "GET",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        },
+        {
+          "name": "Task retained with updated title and no subject",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Delete task",
+      "method": "DELETE",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Verify deletion",
+      "method": "GET",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        },
+        {
+          "name": "Deleted task is absent",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Edit profile",
+      "method": "PUT",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Admin login",
+      "method": "POST",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Delete disposable account",
+      "method": "DELETE",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "name": "Verify account deletion",
+      "method": "GET",
+      "status": 200,
+      "assertions": [
+        {
+          "name": "HTTP 200",
+          "passed": true
+        },
+        {
+          "name": "JSON response",
+          "passed": true
+        },
+        {
+          "name": "Deleted account is absent",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "requests": 14,
+    "assertions": 31,
+    "failed": 0
+  }
+}

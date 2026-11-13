@@ -1,0 +1,33 @@
+{
+  "source": "Direct MongoDB Atlas findOne queries",
+  "database": "bu_task_planner_phase6_lab",
+  "collection": "tasks",
+  "query": {
+    "_id": "6af74676a6b6dc93981b5886"
+  },
+  "before": {
+    "_id": "6af74676a6b6dc93981b5886",
+    "title": "Draft Phase 6 report",
+    "description": "Verify edit and delete",
+    "status": "To Do",
+    "priority": "Medium",
+    "dueDate": "2026-11-20T00:00:00.000Z",
+    "owner": "6af74675a6b6dc93981b5884",
+    "category": "6af74675a6b6dc93981b5885",
+    "createdAt": "2026-11-13T17:18:46.075Z",
+    "updatedAt": "2026-11-13T17:18:46.075Z"
+  },
+  "afterPut": {
+    "_id": "6af74676a6b6dc93981b5886",
+    "title": "Submit revised Phase 6 report",
+    "description": "Verify edit and delete",
+    "status": "Completed",
+    "priority": "Medium",
+    "dueDate": "2026-11-20T00:00:00.000Z",
+    "owner": "6af74675a6b6dc93981b5884",
+    "category": "6af74675a6b6dc93981b5885",
+    "createdAt": "2026-11-13T17:18:46.075Z",
+    "updatedAt": "2026-11-13T17:18:47.223Z"
+  },
+  "afterDelete": null
+}
