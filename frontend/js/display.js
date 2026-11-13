@@ -91,6 +91,8 @@ function taskCard(task) {
     if (task.description) description.append(element('p', task.description));
     card.append(description, element('div', dateLabel(task.dueDate)),
         element('div', task.priority), statusBadge(task.status));
+    card.classList.add('editable-task');
+    card.append(mutationActions('tasks', task, subjectRecords));
     return card;
 }
 
@@ -126,6 +128,7 @@ function renderDashboard(tasks) {
 
 const filters = document.querySelector('#task-filters');
 let taskRecords = [];
+let subjectRecords = [];
 let userRecords = [];
 
 const drawTasks = filters && createList(
@@ -175,8 +178,9 @@ function emptyTable(message, columns) {
 const accountSearch = document.querySelector('#account-search');
 const drawAccounts = accountSearch && createList(
     document.querySelector('#admin-accounts'), document.querySelector('#account-pages'),
-    user => tableRow([user.name, user.email, user.role === 'admin' ? 'Administrator' : 'Student']),
-    () => emptyTable('No matching accounts.', 3)
+    user => tableRow([user.name, user.email, user.role === 'admin' ? 'Administrator' : 'Student',
+        user.role === 'user' ? mutationActions('users', user) : '—']),
+    () => emptyTable('No matching accounts.', 4)
 );
 const drawAdminTasks = accountSearch && createList(
     document.querySelector('#admin-tasks'), document.querySelector('#admin-task-pages'),
@@ -191,7 +195,7 @@ function applyAccountSearch() {
 }
 accountSearch?.addEventListener('input', applyAccountSearch);
 
-async function refreshView() {
+async function refreshView(savedMessage = '') {
     const version = ++refreshVersion;
     results.forEach(section => { section.hidden = true; });
     showFeedback('Loading saved data…');
@@ -209,12 +213,20 @@ async function refreshView() {
             const [{ tasks }, { categories }] = await Promise.all([apiRequest('/api/tasks'), apiRequest('/api/categories')]);
             if (version !== refreshVersion) return;
             taskRecords = tasks;
+            subjectRecords = categories;
             const select = filters.elements.category;
             const selected = select.value;
             select.replaceChildren(new Option('Any subject', ''), new Option('Uncategorized', 'uncategorized'),
                 ...categories.map(category => new Option(category.name, category._id)));
             if ([...select.options].some(option => option.value === selected)) select.value = selected;
             applyTaskFilters(false);
+            const subjects = document.querySelector('#subject-list');
+            subjects.replaceChildren(...(categories.length ? categories.map(subject => {
+                const row = element('div', undefined, 'd-flex flex-wrap gap-2 align-items-center justify-content-between border-top py-2');
+                row.append(element('span', subject.name), mutationActions('categories', subject));
+                return row;
+            }) : [element('p', 'No subjects yet. Use New subject to add one.', 'section-note mb-0')]));
+            fillSubjectOptions(categories);
         } else if (view === 'admin') {
             const [{ users }, { tasks }] = await Promise.all([apiRequest('/api/users'), apiRequest('/api/admin/tasks')]);
             if (version !== refreshVersion) return;
@@ -229,14 +241,20 @@ async function refreshView() {
                 row.append(element('dt', label), element('dd', value));
                 return row;
             }));
+            document.querySelector('#profile-actions').replaceChildren(mutationActions('users', user, [], false));
         }
         results.forEach(section => { section.hidden = false; });
-        showFeedback('');
+        showFeedback(savedMessage);
+        if (savedMessage && feedback) {
+            feedback.className = 'alert alert-success';
+            feedback.tabIndex = -1;
+            feedback.focus();
+        }
     } catch (error) {
         if (version !== refreshVersion) return;
         const message = error instanceof TypeError ? 'Unable to reach the server.' :
             error.name === 'AbortError' ? 'The server took too long to respond.' : error.message;
-        showFeedback(message, error);
+        showFeedback(savedMessage ? savedMessage + ' The list could not refresh. ' + message : message, error);
     }
 }
 

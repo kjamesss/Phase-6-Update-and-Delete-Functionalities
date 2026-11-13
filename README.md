@@ -1,31 +1,34 @@
 # BU Student Academic Task and Deadline Management System
 
-IT 112 · Group 5 · BSIS-2B · Phase 5
+IT 112 · Group 5 · BSIS-2B · Phase 6
 
-[Phase 5 report](docs/lab13/Phase-5-Report.pdf) · [GitHub commits](https://github.com/kjamesss/Phase-5-Displaying-and-Managing-Data-on-the-Frontend/commits/main/) · [Phase 5 tag](https://github.com/kjamesss/Phase-5-Displaying-and-Managing-Data-on-the-Frontend/tree/phase-5)
+[Phase 6 performance report](docs/lab14/Phase-6-Report.pdf) · [GitHub commits](https://github.com/kjamesss/Phase-6-Update-and-Delete-Functionalities/commits/main/) · [Phase 6 tag](https://github.com/kjamesss/Phase-6-Update-and-Delete-Functionalities/tree/phase-6)
 
 ## Run locally
 
-Run `npm ci` with Node.js 22 or later. Copy `.env.example` to `.env`, set `MONGODB_URI` to your MongoDB connection URI, and set a random `JWT_SECRET` of at least 32 characters. Run `npm start` and open http://localhost:3000. For Live Server on port 5500, use the same hostname as the Express server on port 3000.
+Use Node.js 22 or later. Run `npm ci`, copy `.env.example` to `.env`, and set `MONGODB_URI` and a random `JWT_SECRET` of at least 32 characters. Run `npm start` and open http://localhost:3000. For Live Server, serve the frontend on port 5500 and use the same hostname as Express on port 3000.
 
-Register or sign in, add a subject or task, and open the dashboard or task list. An existing account with the database role `admin` opens the administration view after login. Public registration creates student accounts.
+Sign in and open Tasks to edit or delete a task or subject. Profile allows the signed-in account to edit its name and email. An existing administrator account opens Administration after login and can edit or delete eligible student accounts.
 
-| GET endpoint | Access | Display |
+## Update and delete routes
+
+| Method and route | Access | Behavior |
 | --- | --- | --- |
-| `/api/session` | Signed-in user | Profile |
-| `/api/tasks` | Task owner | Progress, deadlines, task cards, search, filters, and pagination |
-| `/api/categories` | Subject owner | Subject choices and filter |
-| `/api/users` | Administrator | Searchable, paginated account table |
-| `/api/admin/tasks` | Administrator | Paginated coursework overview |
+| `PUT /api/tasks/:id` | Task owner | Validates task fields and any selected subject |
+| `DELETE /api/tasks/:id` | Task owner | Removes the selected task |
+| `PUT /api/categories/:id` | Subject owner | Updates subject name and optional display color |
+| `DELETE /api/categories/:id` | Subject owner | Removes the subject and clears its references on the owner's tasks |
+| `PUT /api/users/:id` | Account owner or administrator managing a student | Updates name and email |
+| `DELETE /api/users/:id` | Administrator | Deletes a student account that owns no tasks or subjects |
 
-Tasks and subjects are the equivalents of the example product and order records. Search and pagination work on the records returned for the current account. The task list refreshes after insertion. The dashboard uses Philippine calendar dates.
+The API validates IDs and submitted fields, scopes writes to eligible records, and returns JSON feedback. Task and subject writes and account deletion are serialized per owner within one Express instance. Account edits accept only name and email. Administrator accounts are protected from directory deletion. Subjects can be removed while preserving their tasks as uncategorized.
 
-`frontend/js/api.js` handles Fetch, JSON, and session cookies. `frontend/js/display.js` uses text nodes and shares a pagination helper between cards and tables. The `backend` folder contains API routes, Mongoose models, and integration tests.
+The interface uses a shared Bootstrap modal, prefilled controls, explicit delete confirmation, and the existing Fetch helper. It retains edits after a failed request and refreshes the saved list after success.
 
-## Evidence
+## Verification and evidence
 
-Run `npm test` for the integration suite. Import the [Postman collection](docs/lab13/Phase-5.postman_collection.json) and fill in the base URL and classroom student and admin credentials. Login requests establish session cookies for later requests.
+Run `npm test` for the integration suite. Import the [Postman collection](docs/lab14/Phase-6.postman_collection.json), enter your base URL and lab administrator credentials, and run requests in order. The collection creates and deletes a disposable student account, task, and subject.
 
-[Phase 5 evidence folder](docs/lab13/) · [Phase 4 report and evidence](docs/lab12/)
+The [evidence folder](docs/lab14/) includes the edit and delete screenshots, MongoDB Atlas readback, Postman results, and GitHub history. The verification run used a separate Atlas lab database.
 
-![Student task list with pagination](docs/lab13/student-tasks.png)
+![Phase 6 task edit modal](docs/lab14/edit-task.png)

@@ -40,10 +40,14 @@ function formMessage(form, message, success) {
 
 async function loadSubjects() {
     const data = await apiRequest('/api/categories');
+    fillSubjectOptions(data.categories);
+}
+
+function fillSubjectOptions(categories) {
     document.querySelectorAll('form[data-api] [name="category"]').forEach(select => {
         const previous = select.value;
         select.replaceChildren(new Option('Uncategorized', ''));
-        data.categories.forEach(category => select.add(new Option(category.name, category._id)));
+        categories.forEach(category => select.add(new Option(category.name, category._id)));
         if ([...select.options].some(option => option.value === previous)) select.value = previous;
     });
 }
